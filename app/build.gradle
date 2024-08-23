@@ -1,0 +1,47 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.github.triplet.play'
+
+android {
+    compileSdkVersion 33
+    buildToolsVersion "33.0.2"
+
+    defaultConfig {
+        applicationId "app"
+        minSdkVersion 11
+        targetSdkVersion 33
+        versionName build_version
+    }
+
+    signingConfigs {
+        release {
+            storeFile file(RELEASE_STORE_FILE)
+            storePassword RELEASE_STORE_PASSWORD
+            keyAlias RELEASE_KEY_ALIAS
+            keyPassword RELEASE_KEY_PASSWORD
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard.cfg'
+            signingConfig signingConfigs.release
+        }
+    }
+}
+
+play {
+    track = 'beta'
+    playAccountConfigs {
+        defaultAccountConfig {
+            jsonFile = file('play-publish-credentials.json')
+        }
+    }
+}
+
+ext {
+    build_date = "${new Date().format('yyyy-MM-dd')}"
+    build_revision = "${grgit.describe()}"
+    build_version = "${build_revision} ${build_date}"
+}
+include ':app'
